@@ -1,7 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\API\AuthController;
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +25,25 @@ Route::middleware('throttle:60,1')->group(function () {
 // Group for secure routes (only for authenticated users)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+ 
+ Route::apiResource('products', ProductController::class);
+    
+ 
+ Route::apiResource('categories', CategoryController::class);
+ 
+ 
+ Route::apiResource('comments', CommentController::class);
+ 
+ 
+ Route::apiResource('orders', OrderController::class);
+ Route::get('orders/history', [OrderController::class, 'history']);
 
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 });
+// Public routes for viewing goods
+Route::get('products', [ProductController::class, 'index']);
+Route::get('products/{product}', [ProductController::class, 'show']);
+Route::get('categories', [CategoryController::class, 'index']);
+Route::get('categories/{category}/products', [CategoryController::class, 'products']);
