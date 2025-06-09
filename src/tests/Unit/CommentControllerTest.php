@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProductController;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Product;
@@ -18,7 +19,7 @@ class CommentControllerTest extends TestCase
         $request = Request::create('/comments', 'GET');
         $controller = new CommentController();
 
-        $response = $controller->index($product); // Корекція: передаємо Product, а не ProductController
+        $response = $controller->index($request, $product);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertCount(1, $response->getData(true));
@@ -31,11 +32,15 @@ class CommentControllerTest extends TestCase
         $data = [
             'content' => 'Great product!',
             'rating' => 4,
+            'product_id' => $product->id,
         ];
 
         $request = Request::create('/comments', 'POST', $data);
         $controller = new CommentController();
-        $response = $controller->store($request, $product); // Корекція
+        
+        $this->actingAs($user);
+        
+        $response = $controller->store($request,$product); // Only pass Request
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals('Great product!', $response->getData(true)['content']);
@@ -52,7 +57,10 @@ class CommentControllerTest extends TestCase
 
         $request = Request::create("/comments/{$comment->id}", 'PUT', $data);
         $controller = new CommentController();
-        $response = $controller->update($request, $comment);
+        
+        $this->actingAs($user);
+        
+        $response = $controller->update($request,$comment);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Updated comment', $response->getData(true)['content']);
@@ -66,7 +74,10 @@ class CommentControllerTest extends TestCase
         $comment = Comment::factory()->create(['user_id' => $user->id, 'product_id' => $product->id]);
         $request = Request::create("/comments/{$comment->id}", 'DELETE');
         $controller = new CommentController();
-        $response = $controller->destroy($request, $comment);
+        
+        $this->actingAs($user);
+        
+        $response = $controller->destroy($comment);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Comment deleted', $response->getData(true)['message']);

@@ -54,7 +54,7 @@ class CategoryControllerTest extends TestCase
         $category = Category::factory()->create();
         $request = Request::create("/categories/{$category->id}", 'DELETE');
         $controller = new CategoryController();
-        $response = $controller->destroy($request, $category);
+        $response = $controller->destroy($category,$request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Category deleted', $response->getData(true)['message']);

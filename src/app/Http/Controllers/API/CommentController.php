@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function index(ProductController $product)
+    public function index(Request $request, Product $product)
     {
         $comments = $product->comments()->with('user')->get();
         return response()->json($comments);
     }
 
-    public function store(Request $request, ProductController $product)
+    public function store(Request $request, Product $product)
     {
         $validated = $request->validate([
             'content' => 'required|string',

@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 // Public routes for viewing goods
+Route::post('/products/{product}/comments', [CommentController::class, 'store']);
 Route::get('products', [ProductController::class, 'index']);
 Route::get('products/{product}', [ProductController::class, 'show']);
 Route::get('categories', [CategoryController::class, 'index']);
